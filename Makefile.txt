@@ -1,0 +1,26 @@
+CMP=as
+LNR=ld
+ASFLAGS=-g -c
+ASFLAGSDBG=--gdwarf2
+LNRFLAGS=-static
+SOURCES=$(wildcard *.s)
+OBJECTS=$(SOURCES:.s=.o)
+PROGRAMS=$(OBJECTS:.o=)
+
+.PHONY: all clean
+.SILENT: clean
+
+exit: exit.s
+	$(CMP) $(ASFLAGS) -o $($<:.s=.o) -c $<
+	$(LNR) $(LNRFLAGS) -o $@ $($<:.s=.o)
+
+all: $(PROGS) $(OBJS)
+
+$(PROGS): %: %.o
+	$(LNR) $(LNRFLAGS) -o $@ $<
+$(OBJS): %.o: %.s
+	$(CMP) $(ASFLAGS) -o $@ -c $<
+
+clean:
+	rm -rf *.o
+	ls | grep -v '\.\|Makefile' | xargs rm -rf
